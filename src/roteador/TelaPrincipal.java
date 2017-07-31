@@ -16,11 +16,13 @@ import javax.swing.JOptionPane;
  */
 public class TelaPrincipal extends javax.swing.JFrame {
     boolean ligado=false;
+    
     /**
      * Creates new form TelaPrincipal
      */
     public TelaPrincipal() {
         initComponents();
+        
     }
 
     /**
@@ -36,13 +38,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
         senha = new javax.swing.JPasswordField();
         jLabel2 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         ssid = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Roteador | Tela Principal");
+        setTitle("Roteador ");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel2.setText("Senha");
 
@@ -50,13 +56,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setText("Parar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
             }
         });
 
@@ -68,7 +67,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jDesktopPane1.setLayer(senha, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jLabel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jButton1, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        jDesktopPane1.setLayer(jButton2, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jLabel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(ssid, javax.swing.JLayeredPane.DEFAULT_LAYER);
         jDesktopPane1.setLayer(jLabel3, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -82,18 +80,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addGroup(jDesktopPane1Layout.createSequentialGroup()
                         .addGap(73, 73, 73)
                         .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                                .addComponent(jButton2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1))
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(ssid, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(senha, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jDesktopPane1Layout.createSequentialGroup()
                         .addGap(123, 123, 123)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(83, Short.MAX_VALUE))
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                        .addGap(164, 164, 164)
+                        .addComponent(jButton1)))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
         jDesktopPane1Layout.setVerticalGroup(
             jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -108,22 +105,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(senha, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(37, 37, 37)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addGap(66, 66, 66))
+                .addGap(34, 34, 34)
+                .addComponent(jButton1)
+                .addGap(69, 69, 69))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jDesktopPane1)
+            .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -131,45 +126,80 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
+        // Funcao para verificar quantidade de caracter
+        if(ligado==false){
+            if(verificaCaracter()){
+            String comando = "netsh wlan set hostednetwork mode=allow ssid="+ssid.getText()+ " key="+senha.getText()+ "keyUsage=persistent ";
+            try {
+                Process exec = Runtime.getRuntime().exec(comando);
+                if(exec.waitFor() == 0) {  
+                   Runtime.getRuntime().exec("netsh wlan start hostednetwork");
+                    JOptionPane.showMessageDialog(null, "O Roteador foi iniciado ...");
+                    jButton1.setText("Parar");
+                    
+                    ligado = true;
+                }       
+               else {            
+                  System.out.println("ERRO: " + exec.exitValue());
+                  JOptionPane.showMessageDialog(null, "Roteador não foi inicializado..");
+                  ligado = false;
+               }
+            } catch (Exception e) { e.printStackTrace(); }
+        }
+            
+        }else{
+            try {
+            Runtime.getRuntime().exec("netsh wlan stop hostednetwork");
+            JOptionPane.showMessageDialog(null, "O roteador foi parado..");
+            jButton1.setText("Rotear");
+            ligado = false;
+            
+            } 
+            catch (IOException ex) {
+                    Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
         
          
-         String comando = "netsh wlan set hostednetwork mode=allow ssid="+ssid.getText()+ " key="+senha.getText()+ "keyUsage=persistent ";
-         try {
-             Process exec = Runtime.getRuntime().exec(comando);
-             if(exec.waitFor() == 0) {  
-                Runtime.getRuntime().exec("netsh wlan start hostednetwork");
-                 JOptionPane.showMessageDialog(null, "O Roteador foi iniciado ...");
-                 ligado = true;
-             }       
-            else {            
-               System.out.println("ERRO: " + exec.exitValue());
-               JOptionPane.showMessageDialog(null, "Roteador não foi inicializado..");
-               ligado = false;
-            }
-         } catch (Exception e) { e.printStackTrace(); }
+         
     
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        if(ligado==false){
-            JOptionPane.showMessageDialog(null, "O roteador ainda não foi ligado");
-        }else{
-            try {
-                Runtime.getRuntime().exec("netsh wlan stop hostednetwork");
-                JOptionPane.showMessageDialog(null, "O roteador foi parado..");
-                ligado = false;
-            } catch (IOException ex) {
-                Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            Runtime.getRuntime().exec("netsh wlan stop hostednetwork");           
+            jButton1.setText("Rotear");
+            ligado = false;
+            
+            } 
+            catch (IOException ex) {
+                    Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-    }//GEN-LAST:event_jButton2ActionPerformed
+        
+    }//GEN-LAST:event_formWindowClosing
+
+    private boolean verificaCaracter(){
+        if(senha.getText().length()<8){
+             JOptionPane.showMessageDialog(null, "A senha deve conter no minimo 8 caracteres");
+             return false;
+         }
+         if(ssid.getText().isEmpty()){
+              JOptionPane.showMessageDialog(null, "Informe um nome de SSID");
+              return false;
+         }
+         
+         return true;
+    }
     
+        
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -203,7 +233,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
